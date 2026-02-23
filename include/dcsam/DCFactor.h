@@ -86,6 +86,8 @@ class DCFactor : public gtsam::Factor {
       const gtsam::Values& continuousVals,
       const gtsam::DiscreteFactor::Values& discreteVals) const = 0;
 
+  using Base::error;  // Removes warning about hiding the base class error function.
+
   /**
    * Linearize the error function with respect to the continuous
    * variables (given in `keys_`) at the point specified by `continuousVals`.
@@ -155,7 +157,7 @@ class DCFactor : public gtsam::Factor {
    */
   virtual gtsam::DecisionTreeFactor toDecisionTreeFactor(
       const gtsam::Values& continuousVals,
-      const DiscreteValues& discreteVals) const {
+      [[maybe_unused]] const DiscreteValues& discreteVals) const {
     gtsam::DecisionTreeFactor converted;
     for (const gtsam::DiscreteKey& dkey : discreteKeys_) {
       std::vector<double> probs = evalProbs(dkey, continuousVals);
@@ -175,7 +177,7 @@ class DCFactor : public gtsam::Factor {
    * TODO(Kurran) is this the cleanest way to do this? Seems necessary for the
    * DCMaxMixtureFactor implementations etc...
    */
-  virtual double logNormalizingConstant(const gtsam::Values& values) const {
+  virtual double logNormalizingConstant([[maybe_unused]] const gtsam::Values& values) const {
     throw std::logic_error(
         "Normalizing constant not implemented."
         "One or more of the factors in use requires access to the normalization"
