@@ -102,9 +102,79 @@ class DCDiscreteFactor : public gtsam::DiscreteFactor {
     return dcfactor_->conditionalTimes(f, continuousVals_, discreteVals_);
   }
 
+  virtual DiscreteFactor::shared_ptr operator*(double s) const override {
+    return dcfactor_->toDecisionTreeFactor(continuousVals_, discreteVals_) * s;
+  }
+
   double operator()(const DiscreteValues& values) const {
     assert(allInitialized());
     return exp(-dcfactor_->error(continuousVals_, values));
+  }
+
+  void print(const std::string& s = "DCDiscreteFactor:\n",
+             const gtsam::KeyFormatter& formatter =
+                 gtsam::DefaultKeyFormatter) const override {
+    toDecisionTreeFactor().print(s, formatter);
+    continuousVals_.print("Continuous values: ", formatter);
+    discreteVals_.print("Discrete values: ", formatter);
+  }
+
+  double evaluate(const gtsam::Assignment<gtsam::Key>& values) const override {
+    return this->operator()(DiscreteValues(values));
+  }
+
+  virtual DiscreteFactor::shared_ptr multiply(
+      const DiscreteFactor::shared_ptr& df) const override {
+    return dcfactor_->toDecisionTreeFactor(continuousVals_, discreteVals_)
+        .multiply(df);
+  }
+
+  /// divide by DiscreteFactor::shared_ptr f (safely)
+  virtual DiscreteFactor::shared_ptr operator/(
+      const DiscreteFactor::shared_ptr& df) const override {
+    throw std::logic_error("Not implemented: operator/.");
+  }
+
+  /// Create new factor by summing all values with the same separator values
+  virtual DiscreteFactor::shared_ptr sum(size_t nrFrontals) const override {
+    throw std::logic_error("Not implemented: sum(size_t nrFrontals).");
+  }
+
+  /// Create new factor by summing all values with the same separator values
+  virtual DiscreteFactor::shared_ptr sum(
+      const gtsam::Ordering& keys) const override {
+    throw std::logic_error("Not implemented: sum(gtsam::Ordering&).");
+  }
+
+  /// Find the maximum value in the factor.
+  virtual double max() const override {
+    return dcfactor_->toDecisionTreeFactor(continuousVals_, discreteVals_)
+        .max();
+  }
+
+  /// Create new factor by maximizing over all values with the same separator.
+  virtual DiscreteFactor::shared_ptr max(size_t nrFrontals) const override {
+    throw std::logic_error("Not implemented: max(size_t nrFrontals).");
+  }
+
+  /// Create new factor by maximizing over all values with the same separator.
+  virtual DiscreteFactor::shared_ptr max(
+      const gtsam::Ordering& keys) const override {
+    throw std::logic_error("Not implemented: max(const gtsam::Ordering& keys)");
+  }
+
+  /**
+   * Get the number of non-zero values contained in this factor.
+   * It could be much smaller than `prod_{key}(cardinality(key))`.
+   */
+  virtual uint64_t nrValues() const override {
+    throw std::logic_error("Not implemented: nrValues().");
+  }
+
+  /// Restrict the factor to the given assignment.
+  virtual DiscreteFactor::shared_ptr restrict(
+      const DiscreteValues& assignment) const override {
+    throw std::logic_error("Not implemented: restrict.");
   }
 
   void updateContinuous(const gtsam::Values& continuousVals) {

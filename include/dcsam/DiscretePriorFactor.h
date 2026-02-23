@@ -78,9 +78,61 @@ class DiscretePriorFactor : public gtsam::DiscreteFactor {
     return toDecisionTreeFactor() * f;
   }
 
-  double operator()(const DiscreteValues& values) const override {
+  double operator()(const DiscreteValues& values) const {
     size_t assignment = values.at(dk_.first);
     return probs_[assignment];
+  }
+
+  virtual double evaluate(
+      const gtsam::Assignment<gtsam::Key>& values) const override {
+    return this->operator()(DiscreteValues(values));
+  }
+
+  virtual DiscreteFactor::shared_ptr operator*(double s) const override {
+    return toDecisionTreeFactor() * s;
+  }
+
+  virtual DiscreteFactor::shared_ptr multiply(
+      const DiscreteFactor::shared_ptr& df) const override {
+    return df->multiply(
+        std::make_shared<gtsam::DecisionTreeFactor>(toDecisionTreeFactor()));
+  }
+
+  /// divide by DiscreteFactor::shared_ptr f (safely)
+  virtual DiscreteFactor::shared_ptr operator/(
+      const DiscreteFactor::shared_ptr& df) const override {
+    throw std::logic_error("Not implemented: operator/.");
+  }
+
+  /// Create new factor by summing all values with the same separator values
+  DiscreteFactor::shared_ptr sum(size_t nrFrontals) const override {
+    return toDecisionTreeFactor().sum(nrFrontals);
+  }
+
+  /// Create new factor by summing all values with the same separator values
+  DiscreteFactor::shared_ptr sum(const gtsam::Ordering& keys) const override {
+    return toDecisionTreeFactor().sum(keys);
+  }
+
+  /// Find the maximum value in the factor.
+  double max() const override { return toDecisionTreeFactor().max(); };
+
+  /// Create new factor by maximizing over all values with the same separator.
+  DiscreteFactor::shared_ptr max(size_t nrFrontals) const override {
+    return toDecisionTreeFactor().max(nrFrontals);
+  }
+
+  /// Create new factor by maximizing over all values with the same separator.
+  DiscreteFactor::shared_ptr max(const gtsam::Ordering& keys) const override {
+    return toDecisionTreeFactor().max(keys);
+  }
+
+  virtual uint64_t nrValues() const override { return probs_.size(); }
+
+  /// Restrict the factor to the given assignment.
+  virtual DiscreteFactor::shared_ptr restrict(
+      const DiscreteValues& assignment) const override {
+    return toDecisionTreeFactor().restrict(assignment);
   }
 
   std::string markdown(const gtsam::KeyFormatter& keyFormatter,
