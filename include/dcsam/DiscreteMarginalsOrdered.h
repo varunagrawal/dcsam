@@ -54,7 +54,9 @@ class DiscreteMarginalsOrdered : public gtsam::DiscreteMarginals {
     }
 
     // sum out frontals to get the factor on the separator.
-    gtsam::DecisionTreeFactor::shared_ptr sum = product.sum(frontalKeys);
+    gtsam::DecisionTreeFactor::shared_ptr sum =
+        std::dynamic_pointer_cast<gtsam::DecisionTreeFactor>(
+            product.sum(frontalKeys));
 
     // NOTE: Sum keys seems to be empty often - is this normal?
     // Ordering keys for the conditional so that frontalKeys is in front.

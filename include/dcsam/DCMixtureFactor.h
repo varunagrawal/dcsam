@@ -102,7 +102,7 @@ class DCMixtureFactor : public DCFactor {
             (normalized_ == f.normalized_));
   }
 
-  boost::shared_ptr<gtsam::GaussianFactor> linearize(
+  std::shared_ptr<gtsam::GaussianFactor> linearize(
       const gtsam::Values& continuousVals,
       const DiscreteValues& discreteVals) const override {
     // Retrieve the assignment to our discrete key.
@@ -111,6 +111,12 @@ class DCMixtureFactor : public DCFactor {
     // `assignment` indexes the nonlinear factors we have stored to compute the
     // error.
     return factors_[assignment].linearize(continuousVals);
+  }
+
+  void print(const std::string& s = "DCMixtureFactor:\n",
+             const gtsam::KeyFormatter& formatter =
+                 gtsam::DefaultKeyFormatter) const override {
+    Base::print(s, formatter);
   }
 };
 

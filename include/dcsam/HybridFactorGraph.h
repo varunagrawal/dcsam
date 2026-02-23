@@ -37,15 +37,15 @@ class HybridFactorGraph {
   template <typename NonlinearFactorType>
   void push_nonlinear(const NonlinearFactorType &nonlinearFactor) {
     nonlinearGraph_.push_back(
-        boost::make_shared<NonlinearFactorType>(nonlinearFactor));
+        std::make_shared<NonlinearFactorType>(nonlinearFactor));
   }
 
   /**
    * Add a nonlinear factor *pointer* to the internal nonlinear factor graph
-   * @param nonlinearFactor - boost::shared_ptr to the factor to add
+   * @param nonlinearFactor - std::shared_ptr to the factor to add
    */
   void push_nonlinear(
-      boost::shared_ptr<gtsam::NonlinearFactor> nonlinearFactor);
+      std::shared_ptr<gtsam::NonlinearFactor> nonlinearFactor);
 
   /**
    * Add a discrete factor to the internal discrete graph
@@ -54,14 +54,14 @@ class HybridFactorGraph {
   template <typename DiscreteFactorType>
   void push_discrete(const DiscreteFactorType &discreteFactor) {
     discreteGraph_.push_back(
-        boost::make_shared<DiscreteFactorType>(discreteFactor));
+        std::make_shared<DiscreteFactorType>(discreteFactor));
   }
 
   /**
    * Add a discrete factor *pointer* to the internal discrete graph
-   * @param discreteFactor - boost::shared_ptr to the factor to add
+   * @param discreteFactor - std::shared_ptr to the factor to add
    */
-  void push_discrete(boost::shared_ptr<gtsam::DiscreteFactor> discreteFactor);
+  void push_discrete(std::shared_ptr<gtsam::DiscreteFactor> discreteFactor);
 
   /**
    * Add a discrete-continuous (DC) factor to the internal DC graph
@@ -69,14 +69,14 @@ class HybridFactorGraph {
    */
   template <typename DCFactorType>
   void push_dc(const DCFactorType &dcFactor) {
-    dcGraph_.push_back(boost::make_shared<DCFactorType>(dcFactor));
+    dcGraph_.push_back(std::make_shared<DCFactorType>(dcFactor));
   }
 
   /**
    * Add a discrete-continuous (DC) factor *pointer* to the internal DC graph
-   * @param dcFactor - boost::shared_ptr to the factor to add
+   * @param dcFactor - std::shared_ptr to the factor to add
    */
-  void push_dc(boost::shared_ptr<DCFactor> dcFactor);
+  void push_dc(std::shared_ptr<DCFactor> dcFactor);
 
   /**
    * Simply prints the factor graph.
