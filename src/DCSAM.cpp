@@ -142,7 +142,7 @@ void DCSAM::updateContinuousInfo(const DiscreteValues &discreteVals,
   gtsam::ISAM2UpdateParams updateParams;
   gtsam::FastMap<gtsam::FactorIndex, gtsam::KeySet> newAffectedKeys;
   for (size_t j = 0; j < dcContinuousFactors_.size(); j++) {
-    dcContinuousFactors_[j]->print();
+    // dcContinuousFactors_[j]->print();
     std::shared_ptr<DCContinuousFactor> dcContinuousFactor =
         std::static_pointer_cast<DCContinuousFactor>(dcContinuousFactors_[j]);
     dcContinuousFactor->updateDiscrete(discreteVals);
