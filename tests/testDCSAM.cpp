@@ -884,9 +884,6 @@ TEST(TestSuite, simple_semantic_slam) {
   dcsam::DCValues dcvals = dcsam.calculateEstimate();
 
   const size_t mpeClassL1 = dcvals.discrete.at(lc1);
-  // // std::cout << "mpeClassL1: " << mpeClassL1 << std::endl;
-  // dcvals.discrete.print();
-  // dcvals.continuous.print();
 
   // Plot the poses and landmarks
 #ifdef ENABLE_PLOTTING
