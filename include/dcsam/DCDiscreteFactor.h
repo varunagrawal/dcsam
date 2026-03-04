@@ -42,7 +42,7 @@ class DCDiscreteFactor : public gtsam::DiscreteFactor {
  private:
   gtsam::DiscreteKeys discreteKeys_;
   gtsam::KeyVector continuousKeys_;
-  boost::shared_ptr<DCFactor> dcfactor_;
+  std::shared_ptr<DCFactor> dcfactor_;
   gtsam::Values continuousVals_;
   DiscreteValues discreteVals_;
 
@@ -52,7 +52,7 @@ class DCDiscreteFactor : public gtsam::DiscreteFactor {
   DCDiscreteFactor() = default;
 
   DCDiscreteFactor(const gtsam::DiscreteKeys& discreteKeys,
-                   boost::shared_ptr<DCFactor> dcfactor)
+                   std::shared_ptr<DCFactor> dcfactor)
       : discreteKeys_(discreteKeys),
         continuousKeys_(dcfactor->keys()),
         dcfactor_(dcfactor) {
@@ -61,7 +61,7 @@ class DCDiscreteFactor : public gtsam::DiscreteFactor {
     for (const gtsam::DiscreteKey& k : discreteKeys_) keys_.push_back(k.first);
   }
 
-  explicit DCDiscreteFactor(boost::shared_ptr<DCFactor> dcfactor)
+  explicit DCDiscreteFactor(std::shared_ptr<DCFactor> dcfactor)
       : discreteKeys_(dcfactor->discreteKeys()),
         continuousKeys_(dcfactor->keys()),
         dcfactor_(dcfactor) {
@@ -82,7 +82,7 @@ class DCDiscreteFactor : public gtsam::DiscreteFactor {
 
   virtual ~DCDiscreteFactor() = default;
 
-  bool equals(const DiscreteFactor& other, double tol = 1e-9) const override {
+  bool equals(const DiscreteFactor& other, [[maybe_unused]] double tol = 1e-9) const override {
     if (!dynamic_cast<const DCDiscreteFactor*>(&other)) return false;
     const DCDiscreteFactor& f(static_cast<const DCDiscreteFactor&>(other));
     return (dcfactor_->equals(*f.dcfactor_) &&
@@ -102,9 +102,77 @@ class DCDiscreteFactor : public gtsam::DiscreteFactor {
     return dcfactor_->conditionalTimes(f, continuousVals_, discreteVals_);
   }
 
-  double operator()(const DiscreteValues& values) const override {
+  virtual DiscreteFactor::shared_ptr operator*(double s) const override {
+    return toDecisionTreeFactor() * s;
+  }
+
+  double operator()(const DiscreteValues& values) const {
     assert(allInitialized());
     return exp(-dcfactor_->error(continuousVals_, values));
+  }
+
+  void print(const std::string& s = "DCDiscreteFactor:\n",
+             const gtsam::KeyFormatter& formatter =
+                 gtsam::DefaultKeyFormatter) const override {
+    toDecisionTreeFactor().print(s, formatter);
+    continuousVals_.print("Continuous values: ", formatter);
+    discreteVals_.print("Discrete values: ", formatter);
+  }
+
+  double evaluate(const gtsam::Assignment<gtsam::Key>& values) const override {
+    return this->operator()(DiscreteValues(values));
+  }
+
+  virtual DiscreteFactor::shared_ptr multiply(
+      const DiscreteFactor::shared_ptr& df) const override {
+    return toDecisionTreeFactor().multiply(df);
+  }
+
+  /// divide by DiscreteFactor::shared_ptr f (safely)
+  virtual DiscreteFactor::shared_ptr operator/(
+      const DiscreteFactor::shared_ptr& df) const override {
+    throw toDecisionTreeFactor() / df;
+  }
+
+  /// Create new factor by summing all values with the same separator values
+  virtual DiscreteFactor::shared_ptr sum(size_t nrFrontals) const override {
+    return toDecisionTreeFactor().sum(nrFrontals);
+  }
+
+  /// Create new factor by summing all values with the same separator values
+  virtual DiscreteFactor::shared_ptr sum(
+      const gtsam::Ordering& keys) const override {
+    return toDecisionTreeFactor().sum(keys);
+  }
+
+  /// Find the maximum value in the factor.
+  virtual double max() const override {
+    return toDecisionTreeFactor().max();
+  }
+
+  /// Create new factor by maximizing over all values with the same separator.
+  virtual DiscreteFactor::shared_ptr max(size_t nrFrontals) const override {
+    return toDecisionTreeFactor().max(nrFrontals);
+  }
+
+  /// Create new factor by maximizing over all values with the same separator.
+  virtual DiscreteFactor::shared_ptr max(
+      const gtsam::Ordering& keys) const override {
+    return toDecisionTreeFactor().max(keys);
+  }
+
+  /**
+   * Get the number of non-zero values contained in this factor.
+   * It could be much smaller than `prod_{key}(cardinality(key))`.
+   */
+  virtual uint64_t nrValues() const override {
+    return toDecisionTreeFactor().nrValues();
+  }
+
+  /// Restrict the factor to the given assignment.
+  virtual DiscreteFactor::shared_ptr restrict(
+      const DiscreteValues& assignment) const override {
+    return toDecisionTreeFactor().restrict(assignment);
   }
 
   void updateContinuous(const gtsam::Values& continuousVals) {

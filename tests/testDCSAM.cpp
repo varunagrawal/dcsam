@@ -141,8 +141,8 @@ TEST(TestSuite, smart_discrete_prior_factor) {
 
   // Update the factor
   const std::vector<double> newProbs{0.9, 0.1};
-  boost::shared_ptr<dcsam::SmartDiscretePriorFactor> smart =
-      boost::dynamic_pointer_cast<dcsam::SmartDiscretePriorFactor>(dfg[0]);
+  std::shared_ptr<dcsam::SmartDiscretePriorFactor> smart =
+      std::dynamic_pointer_cast<dcsam::SmartDiscretePriorFactor>(dfg[0]);
   if (smart) smart->updateProbs(newProbs);
 
   // Solve
@@ -203,8 +203,8 @@ TEST(TestSuite, dcdiscrete_mixture) {
 
   std::vector<gtsam::PriorFactor<double>> factorComponents{f1, fNullHypo};
 
-  dcsam::DCMixtureFactor<gtsam::PriorFactor<double>> dcMixture(keys, dk,
-                                                            factorComponents);
+  dcsam::DCMixtureFactor<gtsam::PriorFactor<double>> dcMixture(
+      keys, dk, factorComponents);
   dcfg.push_back(dcMixture);
 
   gtsam::DiscreteKey dkTest = dcMixture.discreteKeys()[0];
@@ -232,8 +232,8 @@ TEST(TestSuite, dcdiscrete_mixture) {
 
   // Update continuous info
   for (size_t j = 0; j < dfg.size(); j++) {
-    boost::shared_ptr<dcsam::DCDiscreteFactor> dcDiscreteFactor =
-        boost::dynamic_pointer_cast<dcsam::DCDiscreteFactor>(dfg[j]);
+    std::shared_ptr<dcsam::DCDiscreteFactor> dcDiscreteFactor =
+        std::dynamic_pointer_cast<dcsam::DCDiscreteFactor>(dfg[j]);
     if (dcDiscreteFactor) {
       dcDiscreteFactor->updateContinuous(initialGuess);
       dcDiscreteFactor->updateDiscrete(initialGuessDiscrete);
@@ -297,8 +297,8 @@ TEST(TestSuite, dccontinuous_mixture) {
   gtsam::PriorFactor<double> fNullHypo(x1, loc, prior_noiseNullHypo);
   std::vector<gtsam::PriorFactor<double>> factorComponents{f1, fNullHypo};
 
-  dcsam::DCMixtureFactor<gtsam::PriorFactor<double>> dcMixture(keys, dk,
-                                                            factorComponents);
+  dcsam::DCMixtureFactor<gtsam::PriorFactor<double>> dcMixture(
+      keys, dk, factorComponents);
   dcfg.push_back(dcMixture);
 
   gtsam::DiscreteKey dkTest = dcMixture.discreteKeys()[0];
@@ -378,8 +378,8 @@ TEST(TestSuite, dccontinuous_mixture) {
 
   // Update continuous info inside DCDiscreteFactor
   for (size_t j = 0; j < dfg.size(); j++) {
-    boost::shared_ptr<dcsam::DCDiscreteFactor> dcDiscreteFactor =
-        boost::dynamic_pointer_cast<dcsam::DCDiscreteFactor>(dfg[j]);
+    std::shared_ptr<dcsam::DCDiscreteFactor> dcDiscreteFactor =
+        std::dynamic_pointer_cast<dcsam::DCDiscreteFactor>(dfg[j]);
     if (dcDiscreteFactor) {
       dcDiscreteFactor->updateContinuous(initialGuess);
       dcDiscreteFactor->updateDiscrete(initialGuessDiscrete);
@@ -401,8 +401,8 @@ TEST(TestSuite, dccontinuous_mixture) {
 
   // Update discrete info inside DCContinuousFactor
   for (size_t j = 0; j < graph.size(); j++) {
-    boost::shared_ptr<dcsam::DCContinuousFactor> dcContinuousFactor =
-        boost::dynamic_pointer_cast<dcsam::DCContinuousFactor>(graph[j]);
+    std::shared_ptr<dcsam::DCContinuousFactor> dcContinuousFactor =
+        std::dynamic_pointer_cast<dcsam::DCContinuousFactor>(graph[j]);
     if (dcContinuousFactor)
       dcContinuousFactor->updateDiscrete(mostProbableEstimate);
   }
@@ -431,8 +431,8 @@ TEST(TestSuite, dccontinuous_mixture) {
 
   // Now update the continuous info in the discrete solver
   for (size_t j = 0; j < dfg.size(); j++) {
-    boost::shared_ptr<dcsam::DCDiscreteFactor> dcDiscreteFactor =
-        boost::dynamic_pointer_cast<dcsam::DCDiscreteFactor>(dfg[j]);
+    std::shared_ptr<dcsam::DCDiscreteFactor> dcDiscreteFactor =
+        std::dynamic_pointer_cast<dcsam::DCDiscreteFactor>(dfg[j]);
     if (dcDiscreteFactor) dcDiscreteFactor->updateContinuous(values);
     // NOTE: we won't updateDiscrete explicitly here anymore, because we don't
     // need to.
@@ -478,8 +478,8 @@ TEST(TestSuite, simple_mixture_factor) {
   gtsam::PriorFactor<double> fNullHypo(x1, loc, prior_noiseNullHypo);
   std::vector<gtsam::PriorFactor<double>> factorComponents{f1, fNullHypo};
 
-  dcsam::DCMixtureFactor<gtsam::PriorFactor<double>> dcMixture(keys, dk,
-                                                            factorComponents);
+  dcsam::DCMixtureFactor<gtsam::PriorFactor<double>> dcMixture(
+      keys, dk, factorComponents);
 
   // Make an empty hybrid factor graph
   dcsam::HybridFactorGraph hfg;
@@ -1554,7 +1554,7 @@ TEST(TestSuite, simple_dcemfactor) {
 }
 
 /**
- * This is for testing the behavior of duplicating discrete factors 
+ * This is for testing the behavior of duplicating discrete factors
  */
 TEST(TestSuite, factor_duplicate) {
    // Make a factor graph
@@ -1654,7 +1654,7 @@ TEST(TestSuite, factor_duplicate) {
     hfg.clear();
     initialGuess.clear();
   }
-  
+
   dcsam::DCValues dcvals = dcsam.calculateEstimate();
   size_t mpeClassL1 = dcvals.discrete.at(lc1);
   EXPECT_EQ(mpeClassL1, 0);

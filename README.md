@@ -5,11 +5,16 @@
 
 This library, built using GTSAM, provides factor type definitions and a new solver to perform approximate inference on discrete-continuous (hybrid) factor graph models typically encountered in robotics applications.
 
-**NOTE: As of 1/30/2023 the latest version of DC-SAM on `main` depends on GTSAM release 4.2a8.** If you are using GTSAM 4.1.1, check out our [pre-4.2 release tag](https://github.com/MarineRoboticsGroup/dcsam/releases/tag/pre-4.2). This is the version of DC-SAM you would have used if you cloned the repository prior to 1/30/2023. Many thanks to [Parker Lusk](https://github.com/plusk01) for bringing us into the future.
+**NOTE: As of 3/01/2026 the latest version of DC-SAM on `main` depends on GTSAM `develop`**
 
-### References
+Thanks to [Varun Agrawal](https://github.com/varunagrawal) for bringing DC-SAM up to date with GTSAM.
+
+If you are using GTSAM 4.1.1, check out our [pre-4.2 release tag](https://github.com/MarineRoboticsGroup/dcsam/releases/tag/pre-4.2). This is the version of DC-SAM you would have used if you cloned the repository prior to 1/30/2023. Many thanks to [Parker Lusk](https://github.com/plusk01) for bringing us into the future.
+
+## References
 
 A technical report describing this library and our solver can be found [here](https://arxiv.org/abs/2204.11936). If you found this code useful, please cite it as:
+
 ```bibtex
 @article{doherty2022discrete,
   author={Doherty, Kevin J. and Lu, Ziqi and Singh, Kurran and Leonard, John J.},
@@ -25,16 +30,17 @@ A technical report describing this library and our solver can be found [here](ht
 
 ## Prerequisites
 
-- [GTSAM](https://github.com/borglab/gtsam) @ `4.2a8`
+- [GTSAM](https://github.com/borglab/gtsam) @ `develop`
 
 To retrieve the appropriate version of GTSAM:
+
 ```sh
 ~ $ git clone https://github.com/borglab/gtsam
 ~ $ cd gtsam
 ~/gtsam $ git checkout 4.2a8
 ```
-Follow instructions in the GTSAM repository to build and install with your desired configuration.
 
+Follow instructions in the GTSAM repository to build and install with your desired configuration.
 
 ### Optional
 
@@ -56,6 +62,7 @@ To build using `cmake`:
 ### Run tests
 
 To run unit tests, first build with testing enabled:
+
 ```bash
 ~/dcsam $ mkdir build
 ~/dcsam $ cd build
@@ -76,13 +83,17 @@ For example usage, check out [the DC-SAM examples repo](https://github.com/Marin
 ## Developing
 
 We're using [pre-commit](https://pre-commit.com/) for automatic linting. To install `pre-commit` run:
-```
+
+```sh
 pip3 install pre-commit
 ```
+
 You can verify your installation went through by running `pre-commit --version` and you should see something like `pre-commit 2.7.1`.
 
 To get started using `pre-commit` with this codebase, from the project repo run:
-```
+
+```sh
 pre-commit install
 ```
+
 Now, each time you `git add` new files and try to `git commit` your code will automatically be run through a variety of linters. You won't be able to commit anything until the linters are happy with your code.
